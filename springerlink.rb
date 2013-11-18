@@ -3,7 +3,6 @@
 
 require 'nokogiri'
 require 'open-uri'
-
 class Springerlink
   def initialize(journal_id)
     page_numbers = get_total_page_number(journal_id)
@@ -36,13 +35,13 @@ class Springerlink
 
   def download_articles(article_hash, document)
     article_hash.each do |link|
-      journal = document.css('img.cover').first.attributes["alt"].value
-      download_link = link[0][0]
-      title = link[1][1]
+      journal = document.css('img.cover').first.attributes["alt"].value.gsub(" ","\\ ")
+      download_link = link[0]
+      title = link[1][1].gsub(" ", "\\ ")
       year = link[1][0][0]
       month = Date::MONTHNAMES.index(link[1][0][1])
       `mkdir -p #{journal}/#{year}/#{month}`
-      `wget #{download_link} -O '#{journal}/#{year}/#{month}/#{title}.pdf'`
+      `wget #{download_link} -O #{journal}/#{year}/#{month}/#{title}.pdf`
     end
   end
 end
